@@ -37,7 +37,7 @@ export default function Index() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <h1 className="font-display text-2xl font-bold text-primary">
-              REZEDA GALLERY
+              REZEDA YUNUS GALLERY
             </h1>
             <div className="flex items-center space-x-8">
               <a href="#gallery" className="font-body text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -194,7 +194,7 @@ export default function Index() {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h4 className="font-display text-2xl font-bold mb-4">
-              REZEDA GALLERY
+              REZEDA YUNUS GALLERY
             </h4>
             <p className="font-body text-primary-foreground/80 mb-8">
               Создаю уникальные интерьерные картины с душой
