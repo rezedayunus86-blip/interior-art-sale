@@ -161,15 +161,32 @@ export default function Index() {
                   </p>
                 </div>
                 
-                <div className="mt-8 flex space-x-4">
-                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90 font-body">
-                    <Icon name="MessageCircle" size={20} className="mr-2" />
-                    Написать художнику
-                  </Button>
-                  <Button variant="outline" className="font-body">
-                    <Icon name="Instagram" size={20} className="mr-2" />
-                    Instagram
-                  </Button>
+                <div className="mt-8 space-y-4">
+                  <div className="flex flex-col space-y-3 text-muted-foreground">
+                    <div className="flex items-center">
+                      <Icon name="Mail" size={18} className="mr-3 text-accent" />
+                      <span className="font-body">rezeda.yunus@gmail.com</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Icon name="Instagram" size={18} className="mr-3 text-accent" />
+                      <span className="font-body">@rezeda_yunus_art</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Icon name="Phone" size={18} className="mr-3 text-accent" />
+                      <span className="font-body">+7 (917) 123-45-67</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-4 pt-4">
+                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90 font-body">
+                      <Icon name="MessageCircle" size={20} className="mr-2" />
+                      Написать художнику
+                    </Button>
+                    <Button variant="outline" className="font-body">
+                      <Icon name="Instagram" size={20} className="mr-2" />
+                      Instagram
+                    </Button>
+                  </div>
                 </div>
               </div>
               
@@ -199,6 +216,22 @@ export default function Index() {
             <p className="font-body text-primary-foreground/80 mb-8">
               Создаю уникальные интерьерные картины с душой
             </p>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex justify-center items-center space-x-2 text-primary-foreground/90">
+                <Icon name="Mail" size={16} className="text-accent" />
+                <span className="font-body text-sm">rezeda.yunus@gmail.com</span>
+              </div>
+              <div className="flex justify-center items-center space-x-2 text-primary-foreground/90">
+                <Icon name="Instagram" size={16} className="text-accent" />
+                <span className="font-body text-sm">@rezeda_yunus_art</span>
+              </div>
+              <div className="flex justify-center items-center space-x-2 text-primary-foreground/90">
+                <Icon name="Phone" size={16} className="text-accent" />
+                <span className="font-body text-sm">+7 (917) 123-45-67</span>
+              </div>
+            </div>
+            
             <div className="flex justify-center space-x-6">
               <Button variant="ghost" size="sm" className="text-primary-foreground hover:text-accent">
                 <Icon name="Mail" size={20} />
