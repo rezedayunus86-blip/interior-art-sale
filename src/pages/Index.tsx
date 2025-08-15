@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
 export default function Index() {
+  const navigate = useNavigate();
   const artworks = [
     {
       id: 1,
@@ -146,6 +148,7 @@ export default function Index() {
                     </div>
                     <Button 
                       size="sm" 
+                      onClick={() => navigate(`/artwork/${artwork.id}`)}
                       className="bg-primary text-primary-foreground hover:bg-primary/90 font-body"
                     >
                       Подробнее
