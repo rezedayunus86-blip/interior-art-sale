@@ -173,7 +173,7 @@ export default function Index() {
                     </div>
                     <div className="flex items-center">
                       <Icon name="Phone" size={18} className="mr-3 text-accent" />
-                      <span className="font-body">+7 (903) 183-33-22</span>
+                      <span className="font-body">+7 (903) 318-33-22</span>
                     </div>
                   </div>
                   
@@ -228,7 +228,7 @@ export default function Index() {
               </div>
               <div className="flex justify-center items-center space-x-2 text-primary-foreground/90">
                 <Icon name="Phone" size={16} className="text-accent" />
-                <span className="font-body text-sm">+7 (903) 183-33-22</span>
+                <span className="font-body text-sm">+7 (903) 318-33-22</span>
               </div>
             </div>
             
