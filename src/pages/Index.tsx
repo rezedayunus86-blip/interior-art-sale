@@ -165,15 +165,15 @@ export default function Index() {
                   <div className="flex flex-col space-y-3 text-muted-foreground">
                     <div className="flex items-center">
                       <Icon name="Mail" size={18} className="mr-3 text-accent" />
-                      <span className="font-body">rezeda.yunus@gmail.com</span>
+                      <span className="font-body">rezedayunus86@gmail.com</span>
                     </div>
                     <div className="flex items-center">
                       <Icon name="Instagram" size={18} className="mr-3 text-accent" />
-                      <span className="font-body">@rezeda_yunus_art</span>
+                      <span className="font-body">@rezeda_yunus</span>
                     </div>
                     <div className="flex items-center">
                       <Icon name="Phone" size={18} className="mr-3 text-accent" />
-                      <span className="font-body">+7 (917) 123-45-67</span>
+                      <span className="font-body">+7 (903) 183-33-22</span>
                     </div>
                   </div>
                   
@@ -220,15 +220,15 @@ export default function Index() {
             <div className="space-y-4 mb-8">
               <div className="flex justify-center items-center space-x-2 text-primary-foreground/90">
                 <Icon name="Mail" size={16} className="text-accent" />
-                <span className="font-body text-sm">rezeda.yunus@gmail.com</span>
+                <span className="font-body text-sm">rezedayunus86@gmail.com</span>
               </div>
               <div className="flex justify-center items-center space-x-2 text-primary-foreground/90">
                 <Icon name="Instagram" size={16} className="text-accent" />
-                <span className="font-body text-sm">@rezeda_yunus_art</span>
+                <span className="font-body text-sm">@rezeda_yunus</span>
               </div>
               <div className="flex justify-center items-center space-x-2 text-primary-foreground/90">
                 <Icon name="Phone" size={16} className="text-accent" />
-                <span className="font-body text-sm">+7 (917) 123-45-67</span>
+                <span className="font-body text-sm">+7 (903) 183-33-22</span>
               </div>
             </div>
             
