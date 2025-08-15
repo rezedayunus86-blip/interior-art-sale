@@ -6,6 +6,30 @@ export default function Index() {
   const artworks = [
     {
       id: 1,
+      title: "Земля и песок",
+      description: "Теплая абстракция в терракотовых тонах",
+      price: "16 000 ₽",
+      size: "60x80 см",
+      image: "/img/9b37b688-e631-4dd5-ad59-babfa4bf7431.jpg"
+    },
+    {
+      id: 2,
+      title: "Нежность утра",
+      description: "Пастельная композиция в розово-кремовых оттенках", 
+      price: "14 000 ₽",
+      size: "50x70 см",
+      image: "/img/9df82178-702a-4a4f-a7e9-61406a27ce93.jpg"
+    },
+    {
+      id: 3,
+      title: "Морской бриз",
+      description: "Спокойная абстракция в сине-белых тонах",
+      price: "18 000 ₽",
+      size: "70x90 см", 
+      image: "/img/8e767619-f079-49ee-b5b0-b135543d2aec.jpg"
+    },
+    {
+      id: 4,
       title: "Гармония форм",
       description: "Абстрактная композиция в теплых тонах",
       price: "15 000 ₽",
@@ -13,7 +37,7 @@ export default function Index() {
       image: "/img/ada19162-1801-4583-88bc-753362c45292.jpg"
     },
     {
-      id: 2,
+      id: 5,
       title: "Потоки света",
       description: "Минималистичная работа в пастельных оттенках", 
       price: "12 000 ₽",
@@ -21,7 +45,7 @@ export default function Index() {
       image: "/img/994681b9-75b3-4922-9e23-f5bf0850b377.jpg"
     },
     {
-      id: 3,
+      id: 6,
       title: "Текстуры времени",
       description: "Современная интерпретация природных форм",
       price: "18 000 ₽",
