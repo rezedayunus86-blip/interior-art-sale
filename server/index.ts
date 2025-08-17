@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url';
 import artworksRouter from './routes/artworks.js';
 import ordersRouter from './routes/orders.js';
 import contactsRouter from './routes/contacts.js';
+import adminRouter from './routes/admin.js';
+import newsRouter from './routes/news.js';
 import { initDatabase } from './db/init.js';
 
 dotenv.config();
@@ -22,6 +24,8 @@ app.use(express.json());
 app.use('/api/artworks', artworksRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/contacts', contactsRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/news', newsRouter);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
