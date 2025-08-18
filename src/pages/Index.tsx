@@ -274,6 +274,15 @@ export default function Index() {
               <p className="font-body text-sm text-primary-foreground/60">
                 © 2024 Rezeda Gallery. Все права защищены.
               </p>
+              <Button 
+                variant="link" 
+                size="sm" 
+                className="text-primary-foreground/40 hover:text-primary-foreground/80 mt-2"
+                onClick={() => navigate('/admin/login')}
+              >
+                <Icon name="Settings" size={14} className="mr-1" />
+                Админ панель
+              </Button>
             </div>
           </div>
         </div>
