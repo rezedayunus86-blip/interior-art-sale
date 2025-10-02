@@ -96,6 +96,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             size = body_data.get('size')
             image_url = body_data.get('image_url')
             is_available = body_data.get('is_available', True)
+            gallery_images = body_data.get('gallery_images', [])
             
             if not all([title, price, size, image_url]):
                 cursor.close()
@@ -112,11 +113,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             cursor.execute(
                 """
-                INSERT INTO artworks (title, description, price, size, image_url, is_available)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO artworks (title, description, price, size, image_url, is_available, gallery_images)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING *
                 """,
-                (title, description, price, size, image_url, is_available)
+                (title, description, price, size, image_url, is_available, gallery_images)
             )
             new_artwork = cursor.fetchone()
             conn.commit()
@@ -136,6 +137,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         elif method == 'PUT':
             body_data = json.loads(event.get('body', '{}'))
             artwork_id = body_data.get('id')
+            gallery_images = body_data.get('gallery_images', [])
             
             if not artwork_id:
                 cursor.close()
@@ -154,7 +156,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 """
                 UPDATE artworks 
                 SET title = %s, description = %s, price = %s, size = %s, 
-                    image_url = %s, is_available = %s, updated_at = CURRENT_TIMESTAMP
+                    image_url = %s, is_available = %s, gallery_images = %s, updated_at = CURRENT_TIMESTAMP
                 WHERE id = %s
                 RETURNING *
                 """,
@@ -165,6 +167,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     body_data.get('size'),
                     body_data.get('image_url'),
                     body_data.get('is_available', True),
+                    gallery_images,
                     artwork_id
                 )
             )

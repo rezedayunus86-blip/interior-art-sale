@@ -16,6 +16,7 @@ interface ArtworkFormData {
   size: string;
   is_available: boolean;
   image_url: string;
+  gallery_images: string[];
 }
 
 const ArtworkForm: React.FC = () => {
@@ -30,11 +31,14 @@ const ArtworkForm: React.FC = () => {
     size: '',
     is_available: true,
     image_url: '',
+    gallery_images: [],
   });
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState<number | null>(null);
+  const [galleryDragging, setGalleryDragging] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -53,6 +57,7 @@ const ArtworkForm: React.FC = () => {
         size: data.size,
         is_available: data.is_available,
         image_url: data.image_url,
+        gallery_images: data.gallery_images || [],
       });
     } catch (error) {
       console.error('Error fetching artwork:', error);
@@ -116,6 +121,79 @@ const ArtworkForm: React.FC = () => {
     }
   };
 
+  const uploadGalleryFile = async (file: File, index?: number) => {
+    setGalleryUploading(index ?? -1);
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        
+        const response = await fetch('https://functions.poehali.dev/d53dbc1a-da88-4b73-a74e-c3e8dd545017', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            image: base64String,
+            filename: file.name,
+          }),
+        });
+
+        if (response.ok) {
+          const { url } = await response.json();
+          const newGalleryImages = [...formData.gallery_images];
+          if (index !== undefined) {
+            newGalleryImages[index] = url;
+          } else {
+            newGalleryImages.push(url);
+          }
+          setFormData({ ...formData, gallery_images: newGalleryImages });
+        }
+        setGalleryUploading(null);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading gallery image:', error);
+      setGalleryUploading(null);
+    }
+  };
+
+  const handleGalleryDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setGalleryDragging(true);
+  };
+
+  const handleGalleryDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setGalleryDragging(false);
+  };
+
+  const handleGalleryDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setGalleryDragging(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        await uploadGalleryFile(file);
+      }
+    }
+  };
+
+  const handleGalleryFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    for (let i = 0; i < files.length; i++) {
+      await uploadGalleryFile(files[i]);
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    const newGalleryImages = formData.gallery_images.filter((_, i) => i !== index);
+    setFormData({ ...formData, gallery_images: newGalleryImages });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -138,6 +216,7 @@ const ArtworkForm: React.FC = () => {
           size: formData.size,
           image_url: formData.image_url,
           is_available: formData.is_available,
+          gallery_images: formData.gallery_images,
         }),
       });
 
@@ -277,7 +356,73 @@ const ArtworkForm: React.FC = () => {
                 </div>
               </div>
 
+              <div>
+                <Label>Дополнительные изображения (Галерея)</Label>
+                <div className="space-y-3">
+                  <div 
+                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                      galleryDragging 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    onDragOver={handleGalleryDragOver}
+                    onDragLeave={handleGalleryDragLeave}
+                    onDrop={handleGalleryDrop}
+                  >
+                    <div className="flex flex-col items-center justify-center py-3">
+                      <Icon name="Images" size={32} className="text-muted-foreground mb-2" />
+                      <p className="text-sm font-medium mb-1">
+                        Перетащите изображения для галереи
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        или нажмите для выбора нескольких файлов
+                      </p>
+                      <label htmlFor="gallery-upload" className="cursor-pointer">
+                        <Button type="button" variant="outline" size="sm" asChild>
+                          <span>
+                            <Icon name="Plus" size={16} className="mr-2" />
+                            Добавить изображения
+                          </span>
+                        </Button>
+                      </label>
+                      <input
+                        id="gallery-upload"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleGalleryFileChange}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
 
+                  {formData.gallery_images.length > 0 && (
+                    <div className="grid grid-cols-4 gap-4 mt-4">
+                      {formData.gallery_images.map((img, index) => (
+                        <div key={index} className="relative group">
+                          <img 
+                            src={img} 
+                            alt={`Gallery ${index + 1}`} 
+                            className="w-full h-32 object-cover rounded border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Icon name="X" size={16} />
+                          </button>
+                          {galleryUploading === index && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded">
+                              <Icon name="Loader2" size={24} className="text-white animate-spin" />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <div className="flex items-center space-x-2">
                 <Checkbox
