@@ -34,6 +34,7 @@ const ArtworkForm: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -58,10 +59,7 @@ const ArtworkForm: React.FC = () => {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadFile = async (file: File) => {
     setUploading(true);
     try {
       const reader = new FileReader();
@@ -89,6 +87,32 @@ const ArtworkForm: React.FC = () => {
     } catch (error) {
       console.error('Error uploading image:', error);
       setUploading(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    uploadFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      uploadFile(file);
     }
   };
 
@@ -187,39 +211,69 @@ const ArtworkForm: React.FC = () => {
               <div>
                 <Label htmlFor="image_url">Изображение</Label>
                 <div className="space-y-3">
-                  <div className="flex gap-2">
+                  <div 
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      isDragging 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    {uploading ? (
+                      <div className="flex flex-col items-center justify-center py-4">
+                        <Icon name="Loader2" size={40} className="text-primary animate-spin mb-3" />
+                        <p className="text-sm text-muted-foreground">Загрузка изображения...</p>
+                      </div>
+                    ) : formData.image_url ? (
+                      <div className="space-y-3">
+                        <img 
+                          src={formData.image_url} 
+                          alt="Preview" 
+                          className="w-48 h-48 object-cover rounded mx-auto border"
+                        />
+                        <p className="text-sm text-muted-foreground">Перетащите новое изображение для замены</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-4">
+                        <Icon name="Upload" size={40} className="text-muted-foreground mb-3" />
+                        <p className="text-base font-medium mb-1">
+                          Перетащите изображение сюда
+                        </p>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          или нажмите для выбора файла
+                        </p>
+                        <label htmlFor="file-upload" className="cursor-pointer">
+                          <Button type="button" variant="outline" asChild>
+                            <span>
+                              <Icon name="Image" size={20} className="mr-2" />
+                              Выбрать файл
+                            </span>
+                          </Button>
+                        </label>
+                        <input
+                          id="file-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Label htmlFor="image_url" className="text-xs text-muted-foreground">
+                      Или вставьте URL изображения
+                    </Label>
                     <Input
                       id="image_url"
                       value={formData.image_url}
                       onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      placeholder="URL изображения"
-                      required
+                      placeholder="https://example.com/image.jpg"
+                      className="mt-1"
                     />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploading}
-                      className="max-w-xs"
-                    />
-                    {uploading && (
-                      <span className="text-sm text-muted-foreground flex items-center">
-                        <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
-                        Загрузка...
-                      </span>
-                    )}
-                  </div>
-                  {formData.image_url && (
-                    <div className="mt-2">
-                      <img 
-                        src={formData.image_url} 
-                        alt="Preview" 
-                        className="w-32 h-32 object-cover rounded border"
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
 
