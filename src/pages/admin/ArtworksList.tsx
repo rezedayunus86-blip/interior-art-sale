@@ -4,7 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Icon from '@/components/ui/icon';
-import { Artwork } from '@/api/artworks';
+interface Artwork {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  size: string;
+  image_url: string;
+  is_available: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 const ArtworksList: React.FC = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
@@ -16,7 +26,7 @@ const ArtworksList: React.FC = () => {
 
   const fetchArtworks = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/artworks`);
+      const response = await fetch('https://functions.poehali.dev/5392aa02-a2d7-442d-85da-0c08ab524b9f');
       const data = await response.json();
       setArtworks(data);
     } catch (error) {
@@ -31,9 +41,9 @@ const ArtworksList: React.FC = () => {
 
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/artworks/${id}`, {
+      const response = await fetch(`https://functions.poehali.dev/5392aa02-a2d7-442d-85da-0c08ab524b9f?id=${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'X-Auth-Token': token || '' },
       });
 
       if (response.ok) {
@@ -78,7 +88,7 @@ const ArtworksList: React.FC = () => {
                 <TableRow key={artwork.id}>
                   <TableCell>
                     <img 
-                      src={artwork.image} 
+                      src={artwork.image_url} 
                       alt={artwork.title} 
                       className="w-16 h-16 object-cover rounded"
                     />
@@ -88,9 +98,9 @@ const ArtworksList: React.FC = () => {
                   <TableCell>{artwork.size}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 text-xs rounded ${
-                      artwork.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      artwork.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {artwork.available ? 'В наличии' : 'Продано'}
+                      {artwork.is_available ? 'В наличии' : 'Продано'}
                     </span>
                   </TableCell>
                   <TableCell>

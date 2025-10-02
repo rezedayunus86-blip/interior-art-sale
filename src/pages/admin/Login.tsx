@@ -19,7 +19,7 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/login`, {
+      const response = await fetch('https://functions.poehali.dev/73767bb3-f0e9-4359-94b3-06980099c5fc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -30,8 +30,9 @@ const AdminLogin: React.FC = () => {
         throw new Error(data.error || 'Ошибка входа');
       }
 
-      const { token } = await response.json();
+      const { token, admin } = await response.json();
       localStorage.setItem('adminToken', token);
+      localStorage.setItem('adminInfo', JSON.stringify(admin));
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Произошла ошибка');

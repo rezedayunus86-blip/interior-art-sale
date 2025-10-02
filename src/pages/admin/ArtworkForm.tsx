@@ -14,11 +14,8 @@ interface ArtworkFormData {
   description: string;
   price: string;
   size: string;
-  technique: string;
-  year: string;
-  available: boolean;
-  image: string;
-  additionalImages: string[];
+  is_available: boolean;
+  image_url: string;
 }
 
 const ArtworkForm: React.FC = () => {
@@ -31,11 +28,8 @@ const ArtworkForm: React.FC = () => {
     description: '',
     price: '',
     size: '',
-    technique: '',
-    year: '',
-    available: true,
-    image: '',
-    additionalImages: ['', '', ''],
+    is_available: true,
+    image_url: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -48,18 +42,15 @@ const ArtworkForm: React.FC = () => {
 
   const fetchArtwork = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/artworks/${id}`);
+      const response = await fetch(`https://functions.poehali.dev/5392aa02-a2d7-442d-85da-0c08ab524b9f?id=${id}`);
       const data = await response.json();
       setFormData({
         title: data.title,
         description: data.description,
         price: data.price.toString(),
         size: data.size,
-        technique: data.technique,
-        year: data.year.toString(),
-        available: data.available,
-        image: data.image,
-        additionalImages: data.additionalImages || ['', '', ''],
+        is_available: data.is_available,
+        image_url: data.image_url,
       });
     } catch (error) {
       console.error('Error fetching artwork:', error);
@@ -73,21 +64,21 @@ const ArtworkForm: React.FC = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const method = isEdit ? 'PUT' : 'POST';
-      const url = isEdit 
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/artworks/${id}`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/artworks`;
 
-      const response = await fetch(url, {
+      const response = await fetch('https://functions.poehali.dev/5392aa02-a2d7-442d-85da-0c08ab524b9f', {
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'X-Auth-Token': token || '',
         },
         body: JSON.stringify({
-          ...formData,
-          price: parseFloat(formData.price),
-          year: parseInt(formData.year),
-          additionalImages: formData.additionalImages.filter(img => img !== ''),
+          ...(isEdit ? { id: parseInt(id!) } : {}),
+          title: formData.title,
+          description: formData.description,
+          price: parseInt(formData.price),
+          size: formData.size,
+          image_url: formData.image_url,
+          is_available: formData.is_available,
         }),
       });
 
@@ -101,29 +92,7 @@ const ArtworkForm: React.FC = () => {
     }
   };
 
-  const handleImageGenerate = async (index: number = -1) => {
-    try {
-      const prompt = `Абстрактная живопись в стиле ${formData.technique || 'современного искусства'}, ${formData.title || 'художественное произведение'}`;
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/generate-image`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
-      });
-      
-      if (response.ok) {
-        const { imageUrl } = await response.json();
-        if (index === -1) {
-          setFormData({ ...formData, image: imageUrl });
-        } else {
-          const newImages = [...formData.additionalImages];
-          newImages[index] = imageUrl;
-          setFormData({ ...formData, additionalImages: newImages });
-        }
-      }
-    } catch (error) {
-      console.error('Error generating image:', error);
-    }
-  };
+
 
   return (
     <div className="p-8">
@@ -135,27 +104,14 @@ const ArtworkForm: React.FC = () => {
         <Card>
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="title">Название</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="price">Цена (₽)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    required
-                  />
-                </div>
+              <div>
+                <Label htmlFor="title">Название</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                />
               </div>
 
               <div>
@@ -169,7 +125,18 @@ const ArtworkForm: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="price">Цена (₽)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    required
+                  />
+                </div>
+
                 <div>
                   <Label htmlFor="size">Размер</Label>
                   <Input
@@ -180,74 +147,28 @@ const ArtworkForm: React.FC = () => {
                     required
                   />
                 </div>
-
-                <div>
-                  <Label htmlFor="technique">Техника</Label>
-                  <Input
-                    id="technique"
-                    value={formData.technique}
-                    onChange={(e) => setFormData({ ...formData, technique: e.target.value })}
-                    placeholder="Масло на холсте"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="year">Год</Label>
-                  <Input
-                    id="year"
-                    type="number"
-                    value={formData.year}
-                    onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                    required
-                  />
-                </div>
               </div>
 
               <div>
-                <Label htmlFor="image">Основное изображение</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="image"
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="URL изображения"
-                    required
-                  />
-                  <Button type="button" variant="outline" onClick={() => handleImageGenerate()}>
-                    <Icon name="Sparkles" size={20} className="mr-2" />
-                    Сгенерировать
-                  </Button>
-                </div>
+                <Label htmlFor="image_url">Изображение (URL)</Label>
+                <Input
+                  id="image_url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  placeholder="URL изображения"
+                  required
+                />
               </div>
 
-              <div>
-                <Label>Дополнительные изображения</Label>
-                {formData.additionalImages.map((img, index) => (
-                  <div key={index} className="flex gap-2 mt-2">
-                    <Input
-                      value={img}
-                      onChange={(e) => {
-                        const newImages = [...formData.additionalImages];
-                        newImages[index] = e.target.value;
-                        setFormData({ ...formData, additionalImages: newImages });
-                      }}
-                      placeholder={`URL изображения ${index + 1}`}
-                    />
-                    <Button type="button" variant="outline" onClick={() => handleImageGenerate(index)}>
-                      <Icon name="Sparkles" size={20} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+
 
               <div className="flex items-center space-x-2">
                 <Checkbox
-                  id="available"
-                  checked={formData.available}
-                  onCheckedChange={(checked) => setFormData({ ...formData, available: checked as boolean })}
+                  id="is_available"
+                  checked={formData.is_available}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_available: checked as boolean })}
                 />
-                <Label htmlFor="available">В наличии</Label>
+                <Label htmlFor="is_available">В наличии</Label>
               </div>
 
               <div className="flex gap-4">

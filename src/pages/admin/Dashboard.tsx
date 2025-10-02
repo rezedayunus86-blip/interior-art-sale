@@ -23,13 +23,15 @@ const AdminDashboard: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/admin/stats`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch('https://functions.poehali.dev/5392aa02-a2d7-442d-85da-0c08ab524b9f');
       if (response.ok) {
         const data = await response.json();
-        setStats(data);
+        setStats({
+          artworks: data.length,
+          orders: 0,
+          news: 0,
+          contacts: 0,
+        });
       }
     } catch (error) {
       console.error('Error fetching stats:', error);

@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "Успешная авторизация",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "email": "admin@artgallery.com",
+        "password": "admin123"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "token": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Неверный пароль",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "email": "admin@artgallery.com",
+        "password": "wrongpassword"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
