@@ -33,6 +33,7 @@ const ArtworkForm: React.FC = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -54,6 +55,40 @@ const ArtworkForm: React.FC = () => {
       });
     } catch (error) {
       console.error('Error fetching artwork:', error);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        
+        const response = await fetch('https://functions.poehali.dev/d53dbc1a-da88-4b73-a74e-c3e8dd545017', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            image: base64String,
+            filename: file.name,
+          }),
+        });
+
+        if (response.ok) {
+          const { url } = await response.json();
+          setFormData({ ...formData, image_url: url });
+        }
+        setUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setUploading(false);
     }
   };
 
@@ -150,14 +185,42 @@ const ArtworkForm: React.FC = () => {
               </div>
 
               <div>
-                <Label htmlFor="image_url">Изображение (URL)</Label>
-                <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="URL изображения"
-                  required
-                />
+                <Label htmlFor="image_url">Изображение</Label>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      id="image_url"
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                      placeholder="URL изображения"
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                      className="max-w-xs"
+                    />
+                    {uploading && (
+                      <span className="text-sm text-muted-foreground flex items-center">
+                        <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                        Загрузка...
+                      </span>
+                    )}
+                  </div>
+                  {formData.image_url && (
+                    <div className="mt-2">
+                      <img 
+                        src={formData.image_url} 
+                        alt="Preview" 
+                        className="w-32 h-32 object-cover rounded border"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
 
